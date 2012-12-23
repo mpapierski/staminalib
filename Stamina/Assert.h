@@ -26,8 +26,16 @@ $Id$
 
 #pragma once
 
-//#define CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
+#if !defined(STAMINA_LIB_ASSERT_H_INCLUDED_)
+#define STAMINA_LIB_ASSERT_H_INCLUDED_
+
+#if !defined(_ASSERTE)
+#include <cassert>
+#define _ASSERTE(expr) \
+	do { \
+		assert((expr)); \
+	} while (0)
+#endif
 
 #define S_ASSERT(a) _ASSERTE(a)
 
@@ -74,3 +82,5 @@ $Id$
 #define K_ASSERT_PTR(ptr) {if (!K_CHECK_PTR(ptr)) {IMDEBUG(DBG_ERROR, "Bad pointer: " #ptr " = %x in " __FUNCTION__, ptr);}}
 #endif
 */
+
+#endif /* STAMINA_LIB_ASSERT_H_INCLUDED_ */

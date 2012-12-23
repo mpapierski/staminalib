@@ -24,11 +24,10 @@ $Id$
 
 */
 
-#include "stdafx.h"
 #include <deque>
-#include <direct.h>
-#include <io.h>
-#include <stdstring.h>
+#include <string>
+#include <sstream>
+#include <boost/lexical_cast.hpp>
 #include "Helpers.h"
 
 #if (_MSC_VER >= 1400)
@@ -67,39 +66,14 @@ namespace Stamina {
 		return r + min;
 	}
 
-
-	const char * inttoch(int v , char * s , int radix , int max , bool upper) {
-		_itoa(v , s , radix);
-		if (!*s) strcpy(s , "0");
-		if (max>0 && strlen(s)!=(unsigned)max) {
-			int sz=strlen(s);
-			if (sz>max) {
-				for (int i=0;i<max;i++) {
-					s[i]=s[sz-max+i];
-				}
-			} else {
-				for (int i=max-1;i>=0;i--) {
-					//      s[i]='E';
-					if (i<max-sz) s[i]='0';
-					else s[i]=s[i-max+sz];
-				}
-			}
-			s[max]='\0';
-
-		}
-		if (radix>10 && upper) _strupr(s);
-		return s;
-	}
-
 /*	const char * inttoch(int v , int radix , int max , bool upper) {
 		return inttoch(v , TLS().buff , radix , max , upper);
 	}*/
 
 	std::string inttostr(int v , int radix , int max , bool upper) {
-		string s;
-		inttoch(v, stringBuffer(s, 16) , radix,max,upper);
-		stringRelease(s);
-		return s;
+		std::stringstream ss;
+		ss << v;
+		return ss.str();
 	}
 
 /*
@@ -155,32 +129,18 @@ namespace Stamina {
 		return sign;
 	}
 
-	int chtoint(const StringRef& str , unsigned char base) {
-		if (str.isWide()) {
-			const wchar_t* s = str.w_str();
-			int sign = checkIntChar(s, base);
-			return sign * wcstoul(s, 0, base);
-		} else {
-			const char* s = str.a_str();
-			int sign = checkIntChar(s, base);
-			return sign * strtoul(s, 0, base);
-		}
-		//return strToNumber<unsigned int>(str, base);
-	}
-	__int64 chtoint64(const StringRef& str , unsigned char base) {
-		if (str.isWide()) {
-			const wchar_t* s = str.w_str();
-			int sign = checkIntChar(s, base);
-			return sign * _wcstoui64(s, 0, base);
-		} else {
-			const char* s = str.a_str();
-			int sign = checkIntChar(s, base);
-			return sign * _strtoui64(s, 0, base);
+	int chtoint(const std::string& str , unsigned char base) {
+		try
+		{
+			return boost::lexical_cast<int>(str);
+		} catch (boost::bad_lexical_cast)
+		{
+			return 0;
 		}
 	}
-
 
 	char * str_tr(char * str , const char * chIn , const char * chOut) {
+		return str;
 		if (!str || !chIn || !chOut || !*chIn || !*chOut || strlen(chIn)!=strlen(chOut)) return str;
 		char * c = str;
 		while (*c) {
@@ -198,28 +158,11 @@ namespace Stamina {
 		size_t findLen = strlen(find);
 		for (size_t i=0; i<count; i++)
 
-			if (strlen(ar[i]) >= findLen && !_strnicmp(find , ar[i] , findLen)) {
+			if (strlen(ar[i]) >= findLen && !(find , ar[i] , findLen)) {
 				if (ar[i][findLen] != 0 && ar[i][findLen] != '=')
 					continue;
 				if (getValue) {
 					char * value = strchr((char*)ar[i] , '=');
-					if (!value) 
-						return 0;
-					return value + 1;
-				} else return ar[i];
-			}
-			return 0;
-	}
-
-	const wchar_t * searchArray(const wchar_t * find , const wchar_t ** ar  , size_t count , bool getValue) {
-		size_t findLen = wcslen(find);
-		for (size_t i=0; i<count; i++)
-
-			if (wcslen(ar[i]) >= findLen && !_wcsnicmp(find , ar[i] , findLen)) {
-				if (ar[i][findLen] != 0 && ar[i][findLen] != L'=')
-					continue;
-				if (getValue) {
-					wchar_t * value = wcschr((wchar_t*)ar[i] , L'=');
 					if (!value) 
 						return 0;
 					return value + 1;
@@ -238,62 +181,15 @@ namespace Stamina {
 		return r ? r : def;
 	}
 
-	String getArgV(const StringRef& find , bool getValue , const StringRef& def) {
-		if (find.isWide() || def.isWide()) {
-			return getArgV((const wchar_t**)__wargv+1 , __argc-1 , find.w_str() , getValue , def.w_str());
-		} else {
-			return getArgV((const char**)__argv+1 , __argc-1 , find.a_str() , getValue , def.a_str());
-		}
+	std::string getArgV(const std::string& find , bool getValue , const std::string& def) {
+		return std::string();
+#if 0
+		/* TODO: __argv */
+		return getArgV((const char**)__argv+1 , __argc-1 , find.a_str() , getValue , def.a_str());
+#endif
 	}
 
-	#ifdef __BORLANDC__
-	#define VSNPRINTF vsnprintf
-	#else
-	#define VSNPRINTF _vsnprintf
-	#endif
-
-	char * _vsaprintf(const char *format, va_list ap)
-	{
-			va_list temp_ap = ap;
-			char *buf = NULL, *tmp;
-			int size = 0, res;
-
-			if ((size = VSNPRINTF(buf, 0, format, ap)) < 1) {
-					size = 128;
-					do {
-							size *= 2;
-							if ((tmp = (char*)realloc(buf, size))==0) {
-									free(buf);
-									return NULL;
-							}
-							buf = tmp;
-							res = VSNPRINTF(buf, size, format, ap);
-					} while (res == size - 1 || res==-1);
-			} else {
-					if ((buf = (char*)malloc(size + 1))==0)
-							return NULL;
-			}                                    
-
-			ap = temp_ap;
-
-			VSNPRINTF(buf, size + 1, format, ap);
-
-			return buf;
-	}
-
-	char * _saprintf(const char *format, ...) {
-		va_list ap;
-
-		va_start(ap, format);
-		char * ret = _vsaprintf(format, ap);
-		va_end(ap);
-			return ret;
-	}
-
-
-
-
-void split(const StringRef & txt, const StringRef & splitter, tStringVector & list, bool all) {
+	void split(const std::string & txt, const std::string & splitter, tStringVector & list, bool all) {
 	unsigned int start = 0, end;
 	list.clear();
 	while (start < txt.length()) { // dopóki jest co kopiowaæ

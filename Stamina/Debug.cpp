@@ -24,8 +24,6 @@ $Id$
 
 */
 
-#include "stdafx.h"
-
 #include <map>
 
 #include "Debug.h"

@@ -13,7 +13,6 @@
 #define __STAMINA_CRITICAL_SECTION__
 
 #include "Stamina.h"
-#include <windows.h>
 #include "Lock.h"
 #include "Assert.h"
 /*

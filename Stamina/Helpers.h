@@ -28,19 +28,12 @@ $Id$
 #pragma once
 
 #include "Stamina.h"
-#include "String.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <math.h>
-#include <time.h>
-#include <io.h>
-#include <direct.h>
+#include <cmath>
 
 namespace Stamina {
 
 	inline int round(double val) {
-		return (int)floor(val + 0.5);
+		return (int)std::floor(val + 0.5);
 	}
 
 	inline void randomSeed() {
@@ -60,12 +53,6 @@ namespace Stamina {
 
 	std::string inttostr(int v , int radix=10 , int max=-1 , bool upper=true);
 
-  inline std::string i64tostr(__int64 v, int radix = 10) {
-    char buf[32];
-    _i64toa_s(v, (char*) buf, 32, radix);
-    return buf;
-  }
-
 	inline std::string stringf(const char *format, ...) {
 		va_list ap;
 
@@ -77,8 +64,7 @@ namespace Stamina {
 			return _msg;
 	}
 
-	int chtoint(const StringRef& str , unsigned char base=0xFF);
-	__int64 chtoint64(const StringRef& str , unsigned char base = 0xFF);
+	int chtoint(const std::string& str , unsigned char base=0xFF);
 
 
 
@@ -103,7 +89,7 @@ namespace Stamina {
 	@param def Default value to return if nothing is found...
 	@return Returns found argument or it's value
 	*/
-	String getArgV(const StringRef& find , bool getValue = false, const StringRef& def = "");
+	std::string getArgV(const std::string& find , bool getValue = false, const std::string& def = "");
 
 	const char * getArgV(const char * const * argList , int argCount , const char * find , bool getValue=false , const char * def=0);
 	const wchar_t * getArgV(const wchar_t * const * argList , int argCount , const wchar_t * find , bool getValue=false , const wchar_t * def=0);
@@ -111,7 +97,7 @@ namespace Stamina {
 	const char * searchArray(const char * find , const char ** ar  , size_t count , bool getValue=false);
 	const wchar_t * searchArray(const wchar_t * find , const wchar_t ** ar  , size_t count , bool getValue=false);
 
-	inline bool argVExists(const StringRef& find) {
+	inline bool argVExists(const std::string& find) {
 		return getArgV(find, false).empty() == false;
 	}
 
@@ -210,12 +196,6 @@ namespace Stamina {
 	std::string longToIp(long adr);
 #endif
 
-	template <typename TYPE>
-	inline char * safeChar(TYPE v) {
-		return v ? (char*)v : "";
-	}
-
-
 // Directories
 
 #ifdef _STRING_
@@ -274,9 +254,9 @@ namespace Stamina {
 #endif
 
 
-	bool fileExists(const StringRef& file);
+	bool fileExists(const std::string& file);
 
-	bool isDirectory(const StringRef& path);
+	bool isDirectory(const std::string& path);
 
 };
 #endif	// __STAMINA_HELPERS_H__

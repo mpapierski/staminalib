@@ -24,9 +24,6 @@ $Id$
 
 */
 
-#include "stdafx.h"
-
-
 #include "Internet.h"
 #include "RegEx.h"
 #include "Helpers.h"

@@ -133,13 +133,18 @@ namespace Stamina {
 	
 #define STAMINA_OBJECT_CLASS_VERSION(TYPE, BASE, VERSION) STAMINA_OBJECT_CLASS_DEFINE(TYPE, #TYPE, BASE, VERSION)
 
+/* XXX: Put SFINAE expr here */
 	template<typename TYPE> inline const ObjectClassInfo& getTypeClassInfo() {
+#if 0
 		__if_exists( TYPE::staticClassInfo ) {
 			return TYPE::staticClassInfo();
 		} 
 		__if_not_exists ( TYPE::staticClassInfo ) {
+#endif
 			return ObjectClassInfo::none;
+#if 0
 		}
+#endif
 	}
 
 

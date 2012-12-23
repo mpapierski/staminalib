@@ -321,7 +321,7 @@ namespace Stamina {
 			S_ASSERT(getBufferSize() >= pos + dataSize);
 
 			copy(_buffer + pos, data, dataSize, this->getBufferEnd(currentLength)); // copy za≥atwia niszczenie nadpisywanych
-			markValid(max(currentLength + dataSize, pos + dataSize));
+			markValid(std::max(currentLength + dataSize, pos + dataSize));
 		}
 
 		inline unsigned int insertInRange(unsigned int pos, const TYPE* data, unsigned int dataSize) {
@@ -491,7 +491,7 @@ namespace Stamina {
 			if (isReference() && truncate) {
 				makeRoom(start + offset + length, start + offset); // potrzebujmey tylko co ma byÊ na poczπtku...
 			} else {
-				makeRoom(max(truncate ? 0 : dataLength, start + offset + length)); // potrzebujemy wszystko
+				makeRoom(std::max(truncate ? 0 : dataLength, start + offset + length)); // potrzebujemy wszystko
 				from = _buffer;
 			}
 			TYPE* to = _buffer;
@@ -505,7 +505,7 @@ namespace Stamina {
 
 			move(to, from, length); // move za≥atwia niszczenie nadpisywanych
 
-			markValid(max(truncate ? 0 : dataLength, start + offset + length));
+			markValid(std::max(truncate ? 0 : dataLength, start + offset + length));
 
 		}
 
@@ -664,19 +664,19 @@ namespace Stamina {
 
 	};
 
-	inline void Buffer<char>::copy(char* to, const char* from, unsigned int count, const char* end) {
+	template<> inline void Buffer<char>::copy(char* to, const char* from, unsigned int count, const char* end) {
 		::memcpy(to, from, count);
 	}
-	inline void Buffer<wchar_t>::copy(wchar_t* to, const wchar_t* from, unsigned int count, const wchar_t* end) {
+	template<> inline void Buffer<wchar_t>::copy(wchar_t* to, const wchar_t* from, unsigned int count, const wchar_t* end) {
 		::wmemcpy(to, from, count);
 	}
-	inline void Buffer<unsigned char>::copy(unsigned char* to, const unsigned char* from, unsigned int count, const unsigned char* end) {
+	template<> inline void Buffer<unsigned char>::copy(unsigned char* to, const unsigned char* from, unsigned int count, const unsigned char* end) {
 		::memcpy(to, from, count);
 	}
-	inline void Buffer<int>::copy(int* to, const int* from, unsigned int count, const int* end) {
+	template<> inline void Buffer<int>::copy(int* to, const int* from, unsigned int count, const int* end) {
 		::memcpy(to, from, count * sizeof(int));
 	}
-	inline void Buffer<unsigned int>::copy(unsigned int* to, const unsigned int* from, unsigned int count, const unsigned int* end) {
+	template<> inline void Buffer<unsigned int>::copy(unsigned int* to, const unsigned int* from, unsigned int count, const unsigned int* end) {
 		::memcpy(to, from, count * sizeof(unsigned int));
 	}
 	/*template <typename TYPE> // wskaüniki...
@@ -697,19 +697,19 @@ namespace Stamina {
 
 
 
-	inline void Buffer<char>::move(char* to, const char* from, unsigned int count, const char* end) {
+	template<> inline void Buffer<char>::move(char* to, const char* from, unsigned int count, const char* end) {
 		::memmove(to, from, count);
 	}
-	inline void Buffer<wchar_t>::move(wchar_t* to, const wchar_t* from, unsigned int count, const wchar_t* end) {
+	template<> inline void Buffer<wchar_t>::move(wchar_t* to, const wchar_t* from, unsigned int count, const wchar_t* end) {
 		::wmemmove(to, from, count);
 	}
-	inline void Buffer<unsigned char>::move(unsigned char* to, const unsigned char* from, unsigned int count, const unsigned char* end) {
+	template<> inline void Buffer<unsigned char>::move(unsigned char* to, const unsigned char* from, unsigned int count, const unsigned char* end) {
 		::memmove(to, from, count);
 	}
-	inline void Buffer<int>::move(int* to, const int* from, unsigned int count, const int* end) {
+	template<> inline void Buffer<int>::move(int* to, const int* from, unsigned int count, const int* end) {
 		::memmove(to, from, count * sizeof(int));
 	}
-	inline void Buffer<unsigned int>::move(unsigned int* to, const unsigned int* from, unsigned int count, const unsigned int* end) {
+	template<> inline void Buffer<unsigned int>::move(unsigned int* to, const unsigned int* from, unsigned int count, const unsigned int* end) {
 		::memmove(to, from, count * sizeof(unsigned int));
 	}
 	/*template <typename TYPE> // wskaüniki...
@@ -735,10 +735,10 @@ namespace Stamina {
 	}
 
 
-	inline unsigned int Buffer<char>::len(const char* str) const {
-		return strlen(str);
+	template<> inline unsigned int Buffer<char>::len(const char* str) const {
+		return std::strlen(str);
 	}
-	inline unsigned int Buffer<wchar_t>::len(const wchar_t* str) const {
+	template<> inline unsigned int Buffer<wchar_t>::len(const wchar_t* str) const {
 		return wcslen(str);
 	}
 	template <typename TYPE>
@@ -747,13 +747,13 @@ namespace Stamina {
 	}
 
 
-	inline void Buffer<char>::nullify(char* where) {
+	template<> inline void Buffer<char>::nullify(char* where) {
 		*where = 0;
 	}
-	inline void Buffer<wchar_t>::nullify(wchar_t* where) {
+	template<> inline void Buffer<wchar_t>::nullify(wchar_t* where) {
 		*where = 0;
 	}
-	inline void Buffer<unsigned char>::nullify(unsigned char* where) {
+	template<> inline void Buffer<unsigned char>::nullify(unsigned char* where) {
 		*where = 0;
 	}
 	/*template<typename TYPE>
@@ -800,16 +800,16 @@ namespace Stamina {
 	}
 
 
-	inline int Buffer<char>::compare(const Buffer<char>& b) const {
+	template<> inline int Buffer<char>::compare(const Buffer<char>& b) const {
 		return this->compareBytes(b);
 	}
-	inline int Buffer<wchar_t>::compare(const Buffer<wchar_t>& b) const {
+	template<> inline int Buffer<wchar_t>::compare(const Buffer<wchar_t>& b) const {
 		return this->compareBytes(b);
 	}
-	inline int Buffer<unsigned char>::compare(const Buffer<unsigned char>& b) const {
+	template<> inline int Buffer<unsigned char>::compare(const Buffer<unsigned char>& b) const {
 		return this->compareBytes(b);
 	}
-	inline int Buffer<int>::compare(const Buffer<int>& b) const {
+	template<> inline int Buffer<int>::compare(const Buffer<int>& b) const {
 		return this->compareBytes(b);
 	}
 	template <typename TYPE>
@@ -817,16 +817,16 @@ namespace Stamina {
 		return this->equal(b) ? 0 : 1;
 	}
 
-	inline bool Buffer<char>::equal(const Buffer<char>& b, unsigned int size)  const {
+	template<> inline bool Buffer<char>::equal(const Buffer<char>& b, unsigned int size)  const {
 		return this->equalBytes(b, size);
 	}
-	inline bool Buffer<wchar_t>::equal(const Buffer<wchar_t>& b, unsigned int size) const {
+	template<> inline bool Buffer<wchar_t>::equal(const Buffer<wchar_t>& b, unsigned int size) const {
 		return this->equalBytes(b, size);
 	}
-	inline bool Buffer<unsigned char>::equal(const Buffer<unsigned char>& b, unsigned int size) const {
+	template<> inline bool Buffer<unsigned char>::equal(const Buffer<unsigned char>& b, unsigned int size) const {
 		return this->equalBytes(b, size);
 	}
-	inline bool Buffer<int>::equal(const Buffer<int>& b, unsigned int size) const {
+	template<> inline bool Buffer<int>::equal(const Buffer<int>& b, unsigned int size) const {
 		return this->equalBytes(b, size);
 	}
 	template <typename TYPE>

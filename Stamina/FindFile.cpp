@@ -24,7 +24,6 @@ $Id$
 
 */
 
-#include "stdafx.h"
 #include "FindFileFiltered.h"
 
 namespace Stamina {

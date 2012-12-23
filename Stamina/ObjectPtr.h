@@ -180,7 +180,7 @@ namespace Stamina {
 	private:
 		T * _obj;
 
-		template <class T> friend class SharedPtr;
+		template <class F> friend class SharedPtr;
 	};
 
 	/** Class for handling iSharedObject (uses reference counting) */

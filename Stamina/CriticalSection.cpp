@@ -24,10 +24,6 @@ $Id$
 
 */
 
-#include "stdafx.h"
-
-#include <windows.h>
-
 #include "CriticalSection.h"
 
 namespace Stamina {

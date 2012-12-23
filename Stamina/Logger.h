@@ -27,6 +27,7 @@ $Id$
 #pragma once
 
 #include "Object.h"
+#include <string>
 
 namespace Stamina {
 
@@ -78,7 +79,7 @@ namespace Stamina {
 
 		virtual void logV(LogLevel level, const char* module, const char* where, const char* format, va_list va) = 0;
 
-		virtual void logMsg(LogLevel level, const char* module, const char* where, const StringRef& msg) = 0;
+		virtual void logMsg(LogLevel level, const char* module, const char* where, const std::string& msg) = 0;
 
 
 	protected:

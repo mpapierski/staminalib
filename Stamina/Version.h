@@ -23,16 +23,21 @@ Contributor(s):
 $Id$
 
 */
-
 #pragma once
+
+#if !defined(STAMINA_LIB_VERSION_H_INCLUDED_)
+#define STAMINA_LIB_VERSION_H_INCLUDED_
 
 
 #include "Stamina.h"
-#include <string.h>
+#include <boost/operators.hpp>
+#include <boost/algorithm/string.hpp>
+#include <cstdlib>
+#include <cstring>
 
 namespace Stamina {
 
-	class Version {
+	class Version: public boost::totally_ordered<Version> {
 	public:
 
 		inline Version(int version = 0) {
@@ -59,13 +64,13 @@ namespace Stamina {
 		inline Version(const char* str) {
 			minor = release = build = 0;
 			char* v = (char*)str;
-			this->major = (short)strtoul(v, &v, 10);
+			this->major = (short)std::strtoul(v, &v, 10);
 			if (*v != '.') return;
-			this->minor = (short)strtoul(++v, &v, 10);
+			this->minor = (short)std::strtoul(++v, &v, 10);
 			if (*v != '.') return;
-			this->release = (short)strtoul(++v, &v, 10);
+			this->release = (short)std::strtoul(++v, &v, 10);
 			if (*v != '.') return;
-			this->build = (short)strtoul(++v, &v, 10);
+			this->build = (short)std::strtoul(++v, &v, 10);
 			if (*v != '.') return;
 		}
 		inline Version& operator = (const Version& b) {
@@ -78,23 +83,9 @@ namespace Stamina {
 		inline bool operator == (const Version& b) const {
 			return major == b.major && minor == b.minor && release == b.release && build == b.build;
 		}
-		inline bool operator != (const Version& b) const {
-			return !(*this == b);
-		}
 		inline bool operator > (const Version& b) const {
-			return this->getInt64() > b.getInt64();
+			return major > b.major && minor > b.minor && release > b.release && build > b.build;
 		}
-		inline bool operator < (const Version& b) const {
-			return this->getInt64() < b.getInt64();
-		}
-		inline bool operator >= (const Version& b) const {
-			return this->getInt64() >= b.getInt64();
-		}
-		inline bool operator <= (const Version& b) const {
-			return this->getInt64() <= b.getInt64();
-		}
-
-
 		inline bool empty() const {
 			return !major && !minor && !release && !build;
 		}
@@ -102,10 +93,6 @@ namespace Stamina {
 		inline unsigned int getInt() const {
 			return ((((major)&0xF)<<28) | (((minor)&0xFF)<<20) | (((release)&0xFF)<<12) | ((build)&0xFFF));
 		}
-		inline __int64 getInt64() const {
-			return *((__int64*)this);
-		}
-
 #ifdef _STRING_
 #define __STAMINA_VERSION__WITH_STRING
 		/**Returns version string (x.x.x.x).
@@ -155,7 +142,7 @@ namespace Stamina {
 		}
 
 		bool operator == (const ModuleVersion&b) {
-			return _category == b._category && _stricmp(_name, b._name) == 0 && _version == b._version;
+			return _category == b._category && boost::iequals(_name, b._name) && _version == b._version;
 		}
 
 		enVersionCategory getCategory() const {
@@ -185,3 +172,5 @@ namespace Stamina {
 #define STAMINA_REGISTER_CLASS_VERSION(CLASS)
 
 #endif
+
+#endif /* STAMINA_LIB_VERSION_H_INCLUDED_ */
